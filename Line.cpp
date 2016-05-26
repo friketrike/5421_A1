@@ -2,6 +2,9 @@
 #include "Line.h"
 
 // ctors
+/**
+ *
+ */
 Line::Line():
   linePtr{new char[DEFAULT_LINE_CAPACITY+1]{}},
   lineLength{0},

@@ -5,12 +5,16 @@
 #include <cctype>
 #include <stdexcept>
 
+/**
+ * The line class.
+ * Holds a c-string line and knows its length and capacity.
+ */
 class Line{
   private:
-    static const int DEFAULT_LINE_CAPACITY{50};
-    char * linePtr;
-    int lineLength;
-    int lineCapacity;
+    static const int DEFAULT_LINE_CAPACITY{50};/**<  Default length for a line.*/
+    char * linePtr;         /**< pointer to the start of the c-string.*/
+    int lineLength;         /**< number of characters stored. Terminator is not counted*/
+    int lineCapacity;       /**< Amount of characters allocated in the array.*/
 
   public:
     // ctors
@@ -28,7 +32,7 @@ class Line{
     bool full() const;
     int capacity() const;
     void resize(); // doubles capacity
-    void push_back(const char& ch);
+    void push_back(const char&);
     void pop_back();
     friend std::ostream& operator<<(std::ostream& out, const Line& line);
     friend std::istream& operator>>(std::istream& in, Line& line); 
