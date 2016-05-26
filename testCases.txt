@@ -1,0 +1,39 @@
+default constructor
+    check pointers
+    check size
+
+insert front 2, insert back 2
+print 1, 4, 1-4, 0-5! 1-5!
+
+ll2 copy ctor // longer into shorter
+
+ll2 = LinkedList()
+
+ll3 copy ctor with emptyList // empty
+
+ll3 insert 1 node // into 2! into 1
+
+ll2 = ll3 // shorter into longer
+
+delete ll1
+
+ll3 = ll2
+
+pop ll3 (front, back)
+print size
+print 1-2
+
+print empty()
+
+insert 4!, insert 3,
+
+remove 2
+remove 1
+remove 2!
+remove 1
+remove 1!
+
+print empty
+delete
+print llPtr?
+
