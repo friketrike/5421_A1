@@ -1,15 +1,62 @@
+/*
+ * Assignennt 1, COMP 5421, summer 2016  
+ * Federico O'Reilly Regueiro 40012304
+ * Concordia University
+ *
+ * Testing class for the Line / LinkedList / LineKeeper Classes
+ */
+
 #include <iostream>
+#include <string>
 #include "Line.h"
 #include "LinkedList.h"
 
 int main(){
+    // Some methods for printing meaningful info
+    struct D {
+        static void printDebugInfo(Line & l, 
+                const std::string mesg = ""){
+            std::cout << "Line " << mesg << std::endl 
+                << " address: " << &l << std::endl
+                << " length: " << l.length() << std::endl
+                <<" capacity: " << l.capacity() << std::endl
+                << " contents: " << l;
+        }
+
+        static void printDebugInfo(LinkedList<Line>::ListNode & n, 
+                const int idx){
+            std::cout << "****node " << idx << "****" << std::endl 
+                << " address: " << &n << std::endl
+                << " prev points to: " << n.prev << std::endl
+                <<" next point to: " << n.next << std::endl
+                << " contents: " << n.data;
+        }
+
+        static void printDebugInfo(LinkedList<Line> & ll, 
+                const std::string mesg = "" ) { 
+            std::cout << "LinkedList " << mesg << std::endl 
+                << " address: " << &ll << std::endl
+                << " length: " << ll.size() << std::endl
+                << " empty?: " << ll.empty() << std::endl
+                << " contents: " << std::endl;
+            LinkedList<Line>::ListNode * p = ll.head;
+            // size + 2 for head and tail
+            for (int i = 0; i < ll.size() + 2; ++i) {
+                printDebugInfo(*p, i);
+                p = p->next;
+            }
+        }
+    };
     // First test the line class to a certain extent
     Line l1;
     Line l2{"Two"};
     Line l3 = l2; // l3(l2) works too
-    Line l4(" ");
+    Line l4('c');
+    Line l5('\0');
 
     Line * lp = new Line();
+    std::cout << "Enter a line: (entering \"One\" works nicely)" 
+        << std::endl;
     std::cin >> l1; //TODO what about chaining two line objects?
     l4 = l2;
     int l4Length = l4.length();
@@ -23,110 +70,78 @@ int main(){
     l4.push_back('u');
     l4.push_back('r');
 
-    std::cout << "Line pointer with default ctor has size " 
-        << lp->length() << " capacity: " << lp->capacity() 
-        << " and it is: \"" << *lp << "\"" << std::endl;
-    std::cout << "L1 with default ctor  and cin has size " 
-        << l1.length() <<  " capacity: " << l1.capacity() 
-        << " and it is: \"" << l1 << "\"" << std::endl;    
-    std::cout << "L2 with const char * ctor has size " 
-        << l2.length() << " capacity: " << l2.capacity() 
-        << " and it is: \"" << l2 << "\"" << std::endl; 
-    std::cout << "L3 with copy ctor from l2 has size " 
-        << l3.length() << " capacity: " << l3.capacity() 
-        << " and it is: \"" << l3 << "\"" << std::endl;
-    std::cout << "L4 size 1  and operator=(l2)/pop/push has size " 
-        << l4.length() << " capacity: " << l4.capacity() 
-        << " and it is: \"" << l4 << "\"" << std::endl;
+    // print info about each line after constructing
+    D::printDebugInfo(*lp, "from line ptr with default ctor.");
+    D::printDebugInfo(l1, "l1 with default ctor and operator>>. ");
+    D::printDebugInfo(l2,  "l2 with const char * ctor." );
+    D::printDebugInfo(l3, "l3, copy ctor from l2.");
+    D::printDebugInfo(l4, "l4, 1 char constructor and 1 pop, 4 pushes");
+    D::printDebugInfo(l5, "l5, 1 char constructor using '\\0'");
     delete lp;
     l3 = Line("Three");
-
+    // verify that concatenated insertion operators
     std::cout << "The lines, in order, are: " << std::endl
         << l1 << l2 << l3 << l4 << std::endl;
     
     // Now test LinkedList
-    LinkedList<Line> *llp1;
-    llp1 = new LinkedList<Line>();
-    std::cout << "l-list generated with argument-les constructor is " 
-        << llp1->size() << " nodes" << std::endl;    
-    llp1->push_back(Line("Three"));
-    std::cout << "l-list is " << llp1->size() << " nodes" << std::endl;    
-    llp1->push_back(l4);
-    llp1->push_front(Line("Two"));
-    llp1->push_front(l1);
-    
-    std::cout << "the list is " << llp1->size() << "after pushing. "
-        << "The first element is: ";
-    llp1->print(1); 
-    std::cout << ", and the last one is: ";
-    llp1->print(4); 
-    
-    for (int i = 0; i < 4; i++) {
-        llp1->print(i+1);
-    } 
-    /* Both fail like they should:
-     * llp1->print(0);
-     * llp1->print(5); */
+    LinkedList<Line> ll1;
+    std::cout << "l-list generated with default ctor is " 
+        << ll1.size() << " nodes" << std::endl;    
+    D::printDebugInfo(ll1, "l-list generated with default ctor "); 
 
-    //copy ctor
-    LinkedList<Line> * llp2 = new LinkedList<Line>(*llp1);
-    std::cout << std::endl;
-    std::cout << "llp2 from copy constructor is: " 
-        << llp2->size() << " nodes and contains: " << std::endl;
-    for (int i = 0; i < 4; i++) {
-        llp2->print(i+1);
-    }  
+    ll1.push_back(Line("Three"));
     
-    int  llp1Length = llp1->size(); 
+    D::printDebugInfo(l1,
+            "after pushing \"Three\" ");
+    ll1.push_back(l4);
+    ll1.push_front(Line("Two"));
+    ll1.push_front(l1);
+    
+    // now call the print function to make sure it works
+    std::cout << "the list is " << ll1.size() << "after pushing. "
+        << "The first element is: ";
+    ll1.print(1); 
+    std::cout << ", and the last one is: ";
+    ll1.print(4);     
+    /* Both fail like they should:
+     * ll1.print(0);
+     * ll1.print(5); */
+
+    D::printDebugInfo(ll1, "Now ll1 looks like this: ");
+    //copy ctor
+    LinkedList<Line> * llp2 = new LinkedList<Line>(ll1);
+    D::printDebugInfo(*llp2, "llp2 from copy ctor. "); 
+    
+    // now pop everything
+    int  llp1Length = ll1.size(); 
     for (int i = 0; i <  llp1Length; i++) {
-        //llp1->pop_front();
-        llp1->pop_back();
+        //ll1.pop_front();
+        ll1.pop_back();
     }
-    // llp1->pop_front(); // Should fail
-    // llp1->pop_back(); // Should fail
+    // ll1.pop_front(); // Should fail
+    // ll1.pop_back(); // Should fail
 
     //copy ctor from empty list
-    LinkedList<Line> * llp3 = new LinkedList<Line>(*llp1); 
+    LinkedList<Line> ll3(ll1); 
   
-    // llp3->insert(Line("wrong"), 2);
-    llp3->insert(Line("right"), 1);
+    // llp3.insert(Line("wrong"), 2);
+    ll3.insert(Line("right"), 1);
 
     LinkedList<Line> * llp4 = new LinkedList<Line>(*llp2);
     
     // assignment operator cases
-    llp4 = llp3; // smaller list onto larger list
-       
-    std::cout << std::endl;
-    std::cout << "llp4 from operator= with a one element list is: " 
-        << llp4->size() << " nodes and contains: " << std::endl;
+    *llp4 = ll3; // smaller list onto larger list
     
-    int  llp4Length = llp4->size(); 
-    for (int i = 0; i <  llp4Length; i++) {
-        llp4->print(i+1);
-    }
+    D::printDebugInfo(*llp4, 
+            "llp4 after assignment operator with a one element list ll3 ");
     
-
-    llp4 = llp1; // empty list onto larger list   
-    std::cout << std::endl;
-    std::cout << "llp4 from operator= with an empty list is: " 
-        << llp4->size() << " nodes and contains: " << std::endl;    
-    std::cout << "The list is empty: "<< llp4->empty() << std::endl;
-
-    llp4Length = llp4->size(); 
-    for (int i = 0; i <  llp4Length; i++) {
-        llp4->print(i+1);
-    }
+    *llp4 = ll1; // empty list onto larger list   
+    D::printDebugInfo(*llp4, 
+            "llp4 after assignment operator with an empty list llp1 ");
     
-    llp4 = llp2; // larger list onto smaller list   
-    std::cout << std::endl;
-    std::cout << "llp4 from operator= with an empty list is: " 
-        << llp4->size() << " nodes and contains: " << std::endl;
-    std::cout << "The list is empty: "<< llp4->empty() << std::endl;
-
-    llp4Length = llp4->size(); 
-    for (int i = 0; i <  llp4Length; i++) {
-        llp4->print(i+1);
-    }
+    *llp4 = *llp2; // larger list onto smaller list    
+    D::printDebugInfo(*llp4, 
+            "llp4 after assignment operator with a larger list llp2 ");
     
     // removal
     // llp4->remove(5); // fails
@@ -135,8 +150,6 @@ int main(){
         << llp4->size() << std::endl;
     
     // bye bye
-    delete llp1;
     delete llp2;
-    delete llp3;
     delete llp4;
 }

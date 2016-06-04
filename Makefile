@@ -2,26 +2,29 @@
 # Federico O'Reilly Regueiro 40012304
 # Concordia University
 #
-# This is a modification to one of the makefiles from the makefile tutorial that
+# This is based on the makefile tutorial that
 # lives here http://mrbook.org/blog/tutorials/make/
 #
 CC=g++
 CFLAGS=-c -Wall -std=c++11
+CFLAGS_NO_D=-c -Wall -std=c++11 -D NDEBUG
 LDFLAGS=
-SOURCES=Line.cpp LineKeeper.cpp driver.cpp
-# LinkedList is not in te sources list since being a template requires it to
-# either be declared in the header or the source to be included in .h
-OBJECTS=$(SOURCES:.cpp=.o)
-EXECUTABLE=driver
 
-all: $(SOURCES) $(EXECUTABLE)
+all: driver tester
 
-$(EXECUTABLE): $(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+driver: driver.o Line.o LineKeeper.o LinkedList.h
+	$(CC) $(LDFLAGS) driver.o Line.o LineKeeper.o -o $@
 
-.cpp.o:
-	$(CC) $(CFLAGS) $< -o $@
+driver.o: driver.cpp Line.cpp LineKeeper.cpp LinkedList.h
+	$(CC) $(CFLAGS_NO_D) driver.cpp Line.cpp LineKeeper.cpp
+
+tester: tester.o Line.o LineKeeper.o LinkedList.h
+	$(CC) $(LDFLAGS) tester.o Line.o LineKeeper.o -o $@
+
+tester.o: tester.cpp Line.cpp LineKeeper.cpp LinkedList.h
+	$(CC) $(CFLAGS) tester.cpp Line.cpp LineKeeper.cpp
 
 .PHONY: clean
 clean:
 	rm -f *.o *~ 
+

@@ -1,10 +1,14 @@
+/*
+ * Assignennt 1, COMP 5421, summer 2016  
+ * Federico O'Reilly Regueiro 40012304
+ * Concordia University
+ *
+ * Line Class implementation file
+ */
 #include <cstddef> 
 #include "Line.h"
 
 // ctors
-/**
- *
- */
 Line::Line():
   linePtr{new char[DEFAULT_LINE_CAPACITY+1]{}},
   lineLength{0},
@@ -20,7 +24,7 @@ Line::Line(const char* ptr):
 
 Line::Line(char c):
   linePtr{new char[DEFAULT_LINE_CAPACITY+1]{c, '\0'}},
-  lineLength{1},
+  lineLength{(int)std::strlen(linePtr)}, // make it 0 if c == '\0'
   lineCapacity{DEFAULT_LINE_CAPACITY} {}
 
 Line::Line(const Line& l):
@@ -67,22 +71,26 @@ int Line::capacity() const{
 }
 
 void Line::resize(){ // doubles capacity
-    char * temp{linePtr};
-    int newCapacity = 
-        (lineCapacity > 0) 
-        ? 2*lineCapacity 
-        : DEFAULT_LINE_CAPACITY;
-    linePtr = new char[(newCapacity)+1]{};// this initializes all to '\0'
-    lineCapacity = newCapacity;
-    lineCpy(temp);
-    delete [] temp;
+    if (full()){
+        char * temp{linePtr};
+        int newCapacity = 
+            (lineCapacity > 0) 
+            ? 2*lineCapacity 
+            : DEFAULT_LINE_CAPACITY;
+        // this initializes all to '\0'
+        linePtr = new char[(newCapacity)+1]{};
+        lineCapacity = newCapacity;
+        lineCpy(temp);
+        delete [] temp;
+    }
 }
 
 void Line::push_back(const char& ch){
     if (!validChar(ch)) return; // avoid inconsestencies from pushing invalid chars 
-    if (full()){
+    /*if (full()){
         resize();
-    } 
+    } */
+    resize();
     linePtr[lineLength]=ch;
     lineLength++;
     linePtr[lineLength]='\0';
@@ -113,6 +121,8 @@ std::istream& operator>>(std::istream& in, Line& line){
     char * temp{line.linePtr+line.lineLength};
     char c;
     while(in >> std::noskipws >> c) {
+        // detect end of line, have a special provision for windows 
+        // line terminators (two characters)
         if (c == '\r'){
             if (std::cin.peek() == '\n'){
                 in >> std::noskipws >> c; //consume for CR+LF terminator
@@ -128,11 +138,13 @@ std::istream& operator>>(std::istream& in, Line& line){
         } // else
 
         // resize accordingly
-        if (line.full()) {
+        line.resize();
+        temp = &line.linePtr[line.length()];
+        /*if (line.full()) {
             std::ptrdiff_t offset{temp-line.linePtr};
             line.resize();
             temp = line.linePtr+offset;
-        }
+        }*/
         *temp = c;
         temp++;
         line.lineLength++; 
